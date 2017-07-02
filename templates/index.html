@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Analysis</title>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+</head>
+<body>
+
+<div id="load_screen">
+    LOADING
+    <div id="big_sqr">
+        <div id="sqr1"></div>
+        <div id="sqr2"></div>
+        <div id="sqr3"></div>
+        <div id="sqr4"></div>
+    </div>
+</div>
+<div id="main_body">
+    <div id="load_screen">
+        LOADING
+        <div id="big_sqr">
+            <div id="sqr1"></div>
+            <div id="sqr2"></div>
+            <div id="sqr3"></div>
+            <div id="sqr4"></div>
+        </div>
+    </div>
+</div>
+<script>
+    window.addEventListener("load", function loader () {
+        var load_screen = document.getElementById("load_screen");
+        var bckg = document.getElementById("main_body");
+        document.body.removeChild(bckg);
+        document.body.removeChild(load_screen);
+        document.getElementById("main").style.display='block';
+    })
+</script>
+<div id="main">
+<header>
+    <nav>
+		<ul>
+
+			<li class="frst">
+				Our Blog
+			</li>
+            <li class="frst">
+				About
+			</li>
+            <a href="{% url 'HomePage' %}"><li class="frst">
+				Home
+			</li></a>
+		</ul>
+	</nav>
+    <div id="branding">
+
+        <h1>How Music is Made</h1>
+
+        <span>Welcome to Music Analysis</span>
+
+        <form method='GET' action=''>
+        <input id = "search" type="text" name = 'query' placeholder="Search for Song, Artist or Album"/>
+        </form>
+        <svg class="arrows">
+            <path class="a1" d="M0 0 L30 32 L60 0"></path>
+            <path class="a2" d="M0 20 L30 52 L60 20"></path>
+            <path class="a3" d="M0 40 L30 72 L60 40"></path>
+        </svg>
+    </div>
+</header>
+<!--If search is not done-->
+{% if not check %}
+<section id="container">
+    <p id="wait">
+        We are tailors of brand experiences, creating intelligent solutions with good people. We team up with our clients to help them put their best face forward and authentically communicate their offering to the world. We believe in prototyping, taking risks, and building meaningful work that surprises and achieves measurable results.
+        Our team is close-knit and collaborative, with an extensive offering of services and a commitment to surpassing client expectations. An interconnected team means that we each play a part in every project that comes through our doors, and that we feel pride and ownership in everything we do.
+    </p>
+    <div class="collection">
+    <a href="ss/{{ 1 }}"><div id="button">See Songs</div></a>
+    {% for song in songs %}
+        <a href="s/{{ song.id }}">
+            <div class="Songs">
+                <img src = "{{ song.Image_src.url }}" />
+                <p>{{song.Title}}</p>
+                <p>{{song.Artist.ArtistName}}</p>
+
+            </div>
+        </a>
+    {% endfor %}
+    </div>
+    <a href="as/{{ 1 }}"><div id="button">See Artist</div></a>
+    <div class="collection">
+    {% for artist in Artist %}
+        <a href="a/{{ artist.id }}">
+            <div class="Songs">
+                <img src = "{{ artist.Picture.url }}" />
+                <p>{{artist.ArtistName}}</p>
+                <p>{{artist.Bio | truncatechars:150}}</p>
+            </div>
+        </a>
+    {% endfor %}
+    </div>
+    <div class="collection">
+    <a href="gs/{{ 1 }}"><div id="button">See Genres</div></a>
+    {% for genre in genres %}
+        <a href="g/{{ genre.id }}">
+            <div class="Songs">
+                <img src = "{{ genre.Logo.url }}" />
+                <p>{{genre.Name}}</p>
+                <p>{{genre.Details | truncatechars:150}}</p>
+            </div>
+        </a>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!--If search is done-->
+
+{% if check %}
+    {% for song in songs %}
+        <a href="{% url 'Detail' arg='s' id=song.id%}"><div class="browse">
+            <img src = "{{ song.Image_src.url }}" />
+            <p><span>Name</span><span id="colon">:</span>{{ song.Title }}<br/></p>
+            <p><span>Artist</span><span id="colon">:</span>{{ song.Artist.ArtistName }}</p>
+            <p><span>Album</span><span id="colon">:</span>{{ song.Album }}<br/></p>
+            <p><span>Genre</span><span id="colon">:</span>{{ song.Genre.Name }}</p>
+        </div></a>
+    {% endfor %}
+
+    {% for artist in Artist %}
+        <a href="{% url 'Detail' arg='a' id=artist.id%}"><div class="browse">
+            <img src = "{{ artist.Picture.url }}" />
+
+            <p>{{ artist.ArtistName }}</p><br/>
+
+            <p>{{ artist.Bio |truncatechars:200  }}</p><br/>
+        </div></a>
+    {% endfor %}
+
+    {% for genre in genres %}
+        <a href="{% url 'Detail' arg='g' id=genre.id%}"><div class="browse">
+            <img src = "{{ genre.Logo.url }}" />
+
+            <p>{{ genre.Name }}<br/></p>
+
+            <p>{{ genre.Details | truncatechars:200}}<br/></p>
+
+        </div></a>
+    {% endfor %}
+
+    <button id="request_btn" onclick="document.getElementById('id01').style.display='block'">Make a Request</button>
+
+    <div id="id01" class="modal">
+
+    <form method='POST' class="modal-content animate" action="">{% csrf_token %}
+    <div class="imgcontainer">
+    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+    </div>
+    <div class="container">
+        <label for="id_Song_name">Song name:</label>
+        <input id="id_Song_name" maxlength="200" name="Song_name" type="text" required>
+        <label for="id_Artist">Artist:</label>
+        <input id="id_Artist" maxlength="100" name="Artist" type="text">
+        <label for="id_Message">Message:</label><br/>
+        <textarea cols="51" id="id_Message" name="Message" rows="10"></textarea>
+        <button id="request_btn2" onclick="document.getElementById('id02')" type="submit">Submit</button>
+        <button id="request_btn2" type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+    </div>
+    </form>
+    </div>
+
+    <script>
+    // Get the modal
+    var modal = document.getElementById('id01');
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+    if (event.target === modal) {
+    modal.style.display = "none";
+    }
+    }
+    </script>
+{% endif %}
+<!--a href="{% url 'RequestForm' %}"><div>
+    <p>Make a request</p>
+</div></a-->
+<footer>
+    <!--Stuff for footer here-->
+    <h1>Stay Connected</h1><h1>Music_Analysis Group Copyright &copy;2017 </h1>
+    <div class="social-btns"><a class="btn facebook" href="#"><i class="fa fa-facebook"></i></a><a class="btn twitter" href="#"><i class="fa fa-twitter"></i></a><a class="btn google" href="#"><i class="fa fa-google"></i></a></div>
+
+</footer>
+</section>
+</div>
+</body>
+</html>

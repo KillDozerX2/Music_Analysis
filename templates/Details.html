@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail View<!--{%if chck == 's'%}{{ song.Title }}{%elif chck == 's'%}{{ song.Title }}{%elif chck == 's'%}{{ song.Title }}{% endif %}--></title>
+
+      <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+</head>
+<body>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.9";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div id="main_body">
+    <div id="load_screen">
+        LOADING
+        <div id="big_sqr">
+            <div id="sqr1"></div>
+            <div id="sqr2"></div>
+            <div id="sqr3"></div>
+            <div id="sqr4"></div>
+        </div>
+    </div>
+</div>
+<script>
+    window.addEventListener("load", function loader () {
+        var load_screen = document.getElementById("load_screen");
+        var bckg = document.getElementById("main_body");
+        document.body.removeChild(bckg);
+        document.body.removeChild(load_screen);
+    })
+</script>
+<header>
+    <nav>
+		<ul>
+
+			<li class="frst">
+				Our Blog
+			</li>
+            <li class="frst">
+				About
+			</li>
+            <a href="{% url 'HomePage' %}"><li class="frst">
+				Home
+			</li></a>
+		</ul>
+	</nav>
+    <div id="branding">
+
+        <h1>How Music is Made</h1>
+
+        <span>Welcome to Music Analysis</span>
+
+        <form method='GET' action=''>
+        <input id = "search" type="text" name = 'query' placeholder="Search for Song, Artist or Album"/>
+        </form>
+        <svg class="arrows">
+            <path class="a1" d="M0 0 L30 32 L60 0"></path>
+            <path class="a2" d="M0 20 L30 52 L60 20"></path>
+            <path class="a3" d="M0 40 L30 72 L60 40"></path>
+        </svg>
+    </div>
+</header>
+{% if chck2 == 1 %}
+<div id="detailcontainer">
+    {% if chck == 's' %}
+    <div>
+        <img src = "{{ song.Image_src.url }}" />
+        {{ song.Title }}<br/><br/><br/>
+
+        {{ song.Album }}<br/><br/><br/>
+
+        {{ song.IntroDetails }}<br/><br/><br/>
+
+        {{ song.Verse1Details }}<br/><br/><br/>
+
+        {{ song.Verse2Details }}<br/><br/><br/>
+    </div>
+    {% endif %}
+
+    {% if chck == 'a' %}
+
+    <div>
+        <img src = "{{ artist.Picture.url }}" />
+
+        {{ artist.ArtistName }}<br/><br/><br/>
+
+        {{ artist.Bio }}<br/><br/><br/>
+    </div>
+    {% endif %}
+    {% if chck == 'g' %}
+    <div>
+        <img src = "{{ genre.Logo.url }}" />
+
+        {{ genre.Name }}<br/><br/><br/>
+
+        {{ genre.Details }}<br/><br/><br/>
+
+    </div>
+    {% endif %}
+<div class="fb-like" data-href="{{request.build_absolute_url}}" data-layout="button_count" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div><br/>
+<div class="fb-comments" data-href="{{request.build_absolute_url}}" data-numposts="5"></div>
+</div>
+{% endif %}
+    {% if chck == 'ss' %}
+        {% for song in songs %}}
+            <a href="{% url 'Detail' arg='s' id=song.id%}"><div class="browse">
+                <img src = "{{ song.Image_src.url }}" />
+                <p><span>Name</span><span id="colon">:</span>{{ song.Title }}<br/></p>
+                <p><span>Artist</span><span id="colon">:</span>{{ song.Artist.ArtistName }}</p>
+                <p><span>Album</span><span id="colon">:</span>{{ song.Album }}<br/></p>
+                <p><span>Genre</span><span id="colon">:</span>{{ song.Genre.Name }}</p>
+            </div></a>
+        {% endfor %}
+
+    <div class="pagination">
+            {% if songs.has_previous %}
+                <a href="?page={{ songs.previous_page_number }}">Previous</a>
+            {% endif %}
+
+            <span id="paginator">
+                Page {{ songs.number }} of {{ songs.paginator.num_pages }}.
+            </span>
+
+            {% if songs.has_next %}
+                <a href="?page={{ songs.next_page_number }}">Next</a>
+            {% endif %}
+    </div>
+{% endif %}
+{% if chck == 'gs' %}
+    {% for genre in genres %}
+        <a href="{% url 'Detail' arg='g' id=genre.id%}"><div class="browse">
+            <img src = "{{ genre.Logo.url }}" />
+
+            <p>{{ genre.Name }}<br/></p>
+
+            <p>{{ genre.Details | truncatechars:200}}<br/></p>
+
+        </div></a>
+    {% endfor %}
+
+    <div class="pagination">
+        {% if genres.has_previous %}
+            <a href="?page={{ genres.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span id="paginator_left">
+            Page {{ genres.number }} of {{ genres.paginator.num_pages }}.
+        </span>
+
+        {% if genres.has_next %}
+            <a href="?page={{ genres.next_page_number }}">Next</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% if chck == 'as' %}
+    {% for artist in artists %}
+        <a href="{% url 'Detail' arg='a' id=artist.id%}"><div class="browse">
+            <img src = "{{ artist.Picture.url }}" />
+
+            <p>{{ artist.ArtistName }}</p><br/>
+
+            <p>{{ artist.Bio |truncatechars:200  }}</p><br/>
+        </div></a>
+    {% endfor %}
+
+<div class="pagination">
+        {% if artists.has_previous %}
+            <a href="?page={{ artists.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span id="paginator">
+            Page {{ artists.number }} of {{ artists.paginator.num_pages }}.
+        </span>
+
+        {% if artists.has_next %}
+            <a href="?page={{ artists.next_page_number }}">Next</a>
+        {% endif %}
+</div>
+{% endif %}
+
+<footer>
+    <!--Stuff for footer here-->
+    <h1>Stay Connected</h1><h1>Music_Analysis Group Copyright &copy;2017 </h1>
+    <div class="social-btns"><a class="btn facebook" href="#"><i class="fa fa-facebook"></i></a><a class="btn twitter" href="#"><i class="fa fa-twitter"></i></a><a class="btn google" href="#"><i class="fa fa-google"></i></a></div>
+
+</footer>
+
+</body>
+</html>
